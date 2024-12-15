@@ -15,7 +15,7 @@ def main():
             print(f"{command}: not found")
         else:
             match command:
-                case "exit":
+                case "exit 0":
                     print(f"% exit 0")
                     break
 
