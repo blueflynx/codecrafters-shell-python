@@ -16,6 +16,7 @@ def main():
         else:
             match command:
                 case "exit":
+                    print(f"% exit 0")
                     break
 
 if __name__ == "__main__":
