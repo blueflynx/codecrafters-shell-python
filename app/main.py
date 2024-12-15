@@ -1,7 +1,7 @@
 import sys
 
 def main():
-    valid_commands = []
+    valid_commands = ["exit 0"]
 
     while True:
 
@@ -9,7 +9,11 @@ def main():
         sys.stdout.write("$ ")
 
         # Wait for user input
-        command = input()
+        command = input().strip()
+
+        match command:
+            case "exit":
+                command += " 0"
 
         if command not in valid_commands:
             print(f"{command}: not found")
