@@ -11,16 +11,16 @@ def main():
         # Wait for user input
         command = input().strip()
 
-        match command:
-            case "exit":
-                command += " 0"
+        # match command:
+        #     case "exit":
+        #         command += " 0"
 
         if command not in valid_commands:
             print(f"{command}: not found")
         else:
             match command:
                 case "exit 0":
-                    break
+                    sys.exit(0)
 
 if __name__ == "__main__":
     main()
