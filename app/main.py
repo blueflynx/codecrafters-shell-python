@@ -13,6 +13,10 @@ def main():
 
         if command not in valid_commands:
             print(f"{command}: not found")
+        else:
+            match command:
+                case "exit":
+                    break
 
 if __name__ == "__main__":
     main()
