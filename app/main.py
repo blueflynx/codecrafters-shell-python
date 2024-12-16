@@ -10,7 +10,7 @@ def evaluate(command: list):
         match command[0]:
             case "exit":
                 if len(command) > 1:
-                    exit(command[1])
+                    exit(int(command[1]))
                 else:
                     exit(0)
             case "echo":
@@ -18,7 +18,7 @@ def evaluate(command: list):
                     echo(command[1:])
                 else:
                     echo("")
-1
+
 def exit(status: int):
     if status in [0, 1]:
         sys.exit(status)
