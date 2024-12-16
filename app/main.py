@@ -2,10 +2,10 @@ import sys
 
 def evaluate(command: list):
 
-    valid_commands = ["exit", "echo"]
+    valid_commands = ["exit", "echo", "type"]
 
     if command[0] not in valid_commands:
-            print(f"{"".join(command)}: not found")
+            invalid_command("".join(command[0]))
     else:
         match command[0]:
             case "exit":
@@ -18,6 +18,18 @@ def evaluate(command: list):
                     echo(command[1:])
                 else:
                     echo("")
+            case "type":
+                if len(command) > 1:
+                    type(command[1], valid_commands)
+
+def type(command: str, valid_commands: list):
+    if command in valid_commands:
+        print(f"{command} is a shell builtin")
+    else:
+        invalid_command(command)
+
+def invalid_command(command: str):
+    print(f"{command}: not found")
 
 def exit(status: int):
     if status in [0, 1]:
