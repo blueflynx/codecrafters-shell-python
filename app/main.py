@@ -1,10 +1,16 @@
 import sys
+import os
+
+def valid_command(command):
+    valid_commands = ["exit", "echo", "type", "ls", "abcd"]
+
+    return True if command in valid_commands else False
 
 def evaluate(command: list):
 
-    valid_commands = ["exit", "echo", "type"]
+    
 
-    if command[0] not in valid_commands:
+    if not valid_command(command[0]):
             invalid_command("".join(command[0]))
     else:
         match command[0]:
@@ -20,10 +26,23 @@ def evaluate(command: list):
                     echo("")
             case "type":
                 if len(command) > 1:
-                    type(command[1], valid_commands)
+                    type(command[1])
 
-def type(command: str, valid_commands: list):
-    if command in valid_commands:
+def type(command: str):
+    all_vars = os.environ
+    paths = os.environ['PATH'].split(':')
+
+    print("allvars=", all_vars)
+    print("paths=", paths)
+    
+    if valid_command(command):
+        for path in paths:
+            # print("path=", path)
+            # print("split=", path.split('/'))
+            # print("last=", path.split('/')[-1])
+            if command[-1] == path.split('/')[-1]:
+                print(f"{command} is {path}")
+                return
         print(f"{command} is a shell builtin")
     else:
         invalid_command(command)
