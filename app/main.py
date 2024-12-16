@@ -5,7 +5,7 @@ def evaluate(command: list):
     valid_commands = ["exit", "echo"]
 
     if command[0] not in valid_commands:
-            print(f"{command}: not found")
+            print(f"{"".join(command)}: not found")
     else:
         match command[0]:
             case "exit":
