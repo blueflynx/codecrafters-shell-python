@@ -1,17 +1,27 @@
 import sys
 import os
+import subprocess
 
+PATHS = os.environ['PATH'].split(os.pathsep)
+BUILTIN_COMMANDS = {"exit", "echo", "type", "run",}
 
-def valid_command(command):
-    valid_commands = ["exit", "echo", "type"]
+def valid_command(command: str) -> bool:
+    valid_commands = ["exit", "echo", "type",]
     return True if command in valid_commands else False
 
 
-def invalid_command(command: str):
+def invalid_command(command: str) -> None:
     print(f"{command}: not found")
 
 
-def evaluate(input_list: list):
+def evaluate(input_list: list) -> None:
+    # print("input_list=", input_list)
+    if executable_path:=get_command_path(input_list[0]):
+        executable_args = input_list[1:]
+        # print("exepath=", executable_path)
+        # print("executable_args=", executable_args, " type=", type(executable_args))
+        run_exe(executable_path, *executable_args)
+        return
 
     if not valid_command(input_list[0]):
             invalid_command("".join(input_list[0]))
@@ -29,7 +39,26 @@ def evaluate(input_list: list):
                     echo("")
             case "type":
                 if len(input_list) > 1:
-                    type(input_list[1])
+                    type_cmd(input_list[1])
+
+
+def run_exe(executable_path, *args) -> subprocess.CalledProcessError | None:
+    # print("executable_path=", executable_path)
+    # print("executable_args=", args, " type=", type(*args))
+    try:
+        result = subprocess.run([executable_path, *args], capture_output=True, text=True, check=True)
+        if result.stderr:
+            print("Stderr:", result.stderr)
+        else:
+            sys.stdout.write(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running executable: {e}")
+        print("Stdout:", e.stdout)
+        print("Stderr:", e.stderr)
+        raise  # Re-raise the exception after printing the error information
+    except FileNotFoundError:
+        print(f"Executable not found: {executable_path}")
+        return None
 
 
 def exit(status: int):
@@ -41,71 +70,37 @@ def echo(args: list):
     print(" ".join(args))
 
 
-def check_command_path(directory, command):
-    """
-    Checks all files under a given directory.
-
-    Args:
-        directory: The path to the directory.
-
-    Prints:
-        The path of each file found in the directory and its subdirectories.
-    """
-    # print("directory=", directory)
-    # print("command=", command)
-
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file == command:
-                file_path = os.path.join(root, file)
-                # print("file_path=", file_path)
-                return file_path
+def get_command_path(command) -> str | None:
+    for path in PATHS:
+        for root, _, files in os.walk(path):
+            # print('root=', root)
+            # print('files=', files)
+            if command in files:
+                return os.path.join(root, command)
+    return None
 
 
-def type(command: str):
-    # all_vars = os.environ
-    
-    paths = os.environ['PATH'].split(':')
-    builtin_commands = ["exit", "echo", "type"]
-
-    # print("allvars=", all_vars)
-    # print("paths=", paths)
-    
-    # if not valid_command(command):
-    #     invalid_command(command)
-    # else:
-
-    if command in builtin_commands:
+def type_cmd(command: str) -> str | None:
+    if command in BUILTIN_COMMANDS:
         print(f"{command} is a shell builtin")
         return
 
-    for path in paths:
-        # print("path=", path)
-        # print("split=", path.split('/'))
-        # print("last=", path.split('/')[-1])
-        command_path = check_command_path(path, command)
-        if command_path:
-            print(f"{command} is {command_path}")
-            return
-    invalid_command(command)
+    if command_path:=get_command_path(command):
+        print(f"{command} is {command_path}")
+    else:
+        invalid_command(command)
         
 
 def main():
     while True:
-
-        # Uncomment this block to pass the first stage
         sys.stdout.write("$ ")
 
-        # Wait for user input
         command = input()
+        # print("actual_command:", command)
         input_list = command.strip().split()
 
-        # match command:
-        #     case "exit":
-        #         command += " 0"
-
         evaluate(input_list)
-        
+
 
 if __name__ == "__main__":
     main()
