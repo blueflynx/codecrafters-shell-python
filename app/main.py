@@ -1,3 +1,4 @@
+import re
 import sys
 import os
 import subprocess
@@ -6,6 +7,7 @@ from pathlib import Path
 
 PATHS = os.environ['PATH'].split(os.pathsep)
 BUILTIN_COMMANDS = {"exit", "echo", "type", "pwd", "cd"}
+QUOTE_SYMBOLS = {"\'", "\"",}
 
 def valid_command(command: str) -> bool:
     valid_commands = {"exit", "echo", "type", "run", "pwd", "cd"}
@@ -113,14 +115,32 @@ def check_directory_exists_pathlib(path_str):
     path = Path(path_str)
     return path.is_dir()
 
+def extract_quoted_string(text):
+    """Extracts a string enclosed in either single or double quotes."""
+    match = re.search(r'["\'](.*?)["\']', text) #non-greedy match
+    if match:
+        return match.group(1)
+    return None
+
+def parse_command(command: str) -> list:
+    print("command=", command)
+    temp = []
+    temp.append(command.split()[0])
+    temp.append(extract_quoted_string(command))
+    return temp
+
 def main():
     while True:
         sys.stdout.write("$ ")
 
         command = input()
         # print("actual_command:", command)
-        input_list = command.strip().split()
-
+        if any(symbol in command for symbol in QUOTE_SYMBOLS):
+            input_list = parse_command(command)
+        else:
+            input_list = command.strip().split()
+        
+        print("input_list=", input_list) 
         evaluate(input_list)
 
 
