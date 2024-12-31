@@ -3,10 +3,10 @@ import os
 import subprocess
 
 PATHS = os.environ['PATH'].split(os.pathsep)
-BUILTIN_COMMANDS = {"exit", "echo", "type", "run",}
+BUILTIN_COMMANDS = {"exit", "echo", "type", "pwd",}
 
 def valid_command(command: str) -> bool:
-    valid_commands = ["exit", "echo", "type",]
+    valid_commands = ["exit", "echo", "type", "run", "pwd"]
     return True if command in valid_commands else False
 
 
@@ -40,6 +40,8 @@ def evaluate(input_list: list) -> None:
             case "type":
                 if len(input_list) > 1:
                     type_cmd(input_list[1])
+            case "pwd":
+                print(os.getcwd())
 
 
 def run_exe(executable_path, *args) -> subprocess.CalledProcessError | None:
