@@ -1,12 +1,14 @@
 import sys
 import os
 import subprocess
+from pathlib import Path
+
 
 PATHS = os.environ['PATH'].split(os.pathsep)
-BUILTIN_COMMANDS = {"exit", "echo", "type", "pwd",}
+BUILTIN_COMMANDS = {"exit", "echo", "type", "pwd", "cd"}
 
 def valid_command(command: str) -> bool:
-    valid_commands = ["exit", "echo", "type", "run", "pwd"]
+    valid_commands = {"exit", "echo", "type", "run", "pwd", "cd"}
     return True if command in valid_commands else False
 
 
@@ -42,7 +44,18 @@ def evaluate(input_list: list) -> None:
                     type_cmd(input_list[1])
             case "pwd":
                 print(os.getcwd())
+            case "cd":
+                change_directory(input_list[1])                
 
+def change_directory(directory: str) -> None:
+    try:
+        os.chdir(directory)
+    except FileNotFoundError:
+        print(f"cd: {directory}: No such file or directory")
+    except NotADirectoryError:
+        print(f"cd: {directory}: Not a directory")
+    except PermissionError:
+        print(f"cd: {directory}: Permission denied")
 
 def run_exe(executable_path, *args) -> subprocess.CalledProcessError | None:
     # print("executable_path=", executable_path)
@@ -92,6 +105,10 @@ def type_cmd(command: str) -> str | None:
     else:
         invalid_command(command)
         
+def check_directory_exists_pathlib(path_str):
+    """Checks if a directory exists using pathlib."""
+    path = Path(path_str)
+    return path.is_dir()
 
 def main():
     while True:
