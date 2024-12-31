@@ -49,7 +49,10 @@ def evaluate(input_list: list) -> None:
 
 def change_directory(directory: str) -> None:
     try:
-        os.chdir(directory)
+        if directory == "~":
+            os.chdir(os.path.expanduser("~"))
+        else:
+            os.chdir(directory)
     except FileNotFoundError:
         print(f"cd: {directory}: No such file or directory")
     except NotADirectoryError:
