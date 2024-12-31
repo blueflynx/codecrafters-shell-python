@@ -118,15 +118,15 @@ def check_directory_exists_pathlib(path_str):
 def extract_quoted_string(text):
     """Extracts a string enclosed in either single or double quotes."""
     match = re.search(r'["\'](.*?)["\']', text) #non-greedy match
-    if match:
-        return match.group(1)
-    return None
+    matches = re.findall(r'["\'](.*?)["\']', text)
+    return matches if matches else None
 
 def parse_command(command: str) -> list:
-    print("command=", command)
+    # print("command=", command)
     temp = []
     temp.append(command.split()[0])
-    temp.append(extract_quoted_string(command))
+    temp = temp + extract_quoted_string(command)
+    print("temp=", temp)
     return temp
 
 def main():
@@ -140,7 +140,7 @@ def main():
         else:
             input_list = command.strip().split()
         
-        print("input_list=", input_list) 
+        # print("input_list=", input_list) 
         evaluate(input_list)
 
 
